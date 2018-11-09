@@ -7,24 +7,32 @@
  */
 
 require('dotenv').load()
-var watson = require('watson-developer-cloud');
+var Assistant = require('watson-developer-cloud/assistant/v1');
 var CONVERSATION_NAME = "Conversation-Demo"; // conversation name goes here.
 var fs = require('fs');
 // load local VCAP configuration
 var appEnv = null;
-var conversationWorkspace, conversation;
+var conversationWorkspace;
+let conversation;
 
 // =====================================
 // CREATE THE SERVICE WRAPPER ==========
 // =====================================
 // Create the service wrapper
-conversation = watson.conversation({
-    url: "https://gateway.watsonplatform.net/conversation/api"
-    , username: process.env.USERNAME
-    , password: process.env.PASSWORD
-    , version_date: '2017-04-10'
-    , version: 'v1'
-});
+// Autenticacao no Assistant
+if(process.env.ASSISTANT_APIKEY){
+    /********  NOVA AUTENTICAÇÃO PARA NOVAS INSTANCIAS  *********/
+    conversation = new Assistant({
+        iam_apikey: process.env.ASSISTANT_APIKEY,
+        version: '2018-07-10',
+    });
+} else {
+    conversation = new Assistant({
+        username: process.env.USERNAME_ASSISTANT,
+        password: process.env.PASSWORD,
+        version: '2018-07-10',
+    });
+}
 // check if the workspace ID is specified in the environment
 conversationWorkspace = process.env.WORKSPACE_ID;
 // if not, look it up by name or create one
@@ -32,7 +40,6 @@ conversationWorkspace = process.env.WORKSPACE_ID;
 
 var chatbot = {
     sendMessage: function (req, callback) {
-        //        var owner = req.user.username;
         buildContextObject(req, function (err, params) {
             if (err) {
                 console.log("Error in building the parameters object: ", err);
@@ -50,10 +57,7 @@ var chatbot = {
                     }
                     , context: context
                 };
-                //                chatLogs(owner, conv, res, () => {
-                //                    return
                 callback(null, res);
-                //                });
             }
             else if (params) {
                 // Send message to the conversation service with the current context
@@ -65,14 +69,7 @@ var chatbot = {
 
                         var conv = data.context.conversation_id;
                         console.log("Got response from Ana: ", JSON.stringify(data));
-                        //                            if (data.context.system.dialog_turn_counter > 1) {
-                        //                                chatLogs(owner, conv, data, () => {
-                        //                                    return callback(null, data);
-                        //                                });
-                        //                            }
-                        //                            else {
                         return callback(null, data);
-                        //                            }
                     }
                 });
             }
