@@ -6,7 +6,7 @@ Este aplicação é uma demo de Front End de chatbot em Node.js que utiliza a AP
 
 ## Deploy no IBM Cloud
 
-[![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/ibm-developer-br/pizzabot)
+[![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/ibm-developer-br/chatbot_template)
 
 ## Executar o app localmente
 
